@@ -16,8 +16,12 @@ defmodule TicTacToeWeb.TicTacToeLive do
     turn = socket.assigns.turn
     # if the selected tile is an empty string
     if Enum.at(board, index) == "" do
+      # updates the board by placing an x or o in the selected index
       updated_board = List.replace_at(board, index, turn)
+      # switch turns
       next_turn = if turn == "X", do: "0", else: "X"
+      # ********* need step to update the player's coordinates in the DB here
+      # ********* need to call the check winner function here
       {:noreply, assign(socket, board: updated_board, turn: next_turn)}
     else
       {:noreply, socket}
@@ -27,15 +31,12 @@ defmodule TicTacToeWeb.TicTacToeLive do
   # need check winner func, wich will check both players coordinates against the winning combinations. Called in the move handle event
 
 # winning combinations:
-# horizintal:
 # (1, 2, 3)
 # (4, 5, 6)
 # (7, 8, 9)
-# vertical:
 # (1, 4, 7)
 # (2, 5, 8)
 # (3, 6, 9)
-# diagonal:
 # (1, 5, 9)
 # (3, 5, 7)
 
