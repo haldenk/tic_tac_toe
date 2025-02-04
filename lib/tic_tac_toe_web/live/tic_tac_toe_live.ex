@@ -21,15 +21,15 @@ defmodule TicTacToeWeb.TicTacToeLive do
       # updates the board by placing an x or o in the selected index
       updated_board = List.replace_at(board, index, turn)
       # switch turns
-      next_turn = if turn == "X", do: "0", else: "X"
+      next_turn = if turn == "X", do: "O", else: "X"
       # fetch the latest game
       game = TicTacToe.Repo.one(TicTacToe.Game) || %TicTacToe.Game{x_moves: [], o_moves: [], x_wins: 0, o_wins: 0}
       IO.inspect(game, label: "game object")
       # updated game, if turn is X, add the index of the move to the x_moves field, if turn is O, add index to o_moves field
       updated_game =
         case turn do
-          "X" -> %{game | x_moves: game.x_moves ++ [index]}
-          "O" -> %{game | o_moves: game.o_moves ++ [index]}
+          "X" -> %{x_moves: game.x_moves ++ [index], o_moves: game.o_moves, x_wins: game.x_wins, o_wins: game.o_wins}
+          "O" -> %{o_moves: game.o_moves ++ [index], x_moves: game.x_moves, x_wins: game.x_wins, o_wins: game.o_wins}
         end
       # changeset to update the DB with the players move
       changeset = TicTacToe.Game.changeset(game, updated_game)
