@@ -4,7 +4,8 @@ defmodule TicTacToeWeb.TicTacToeLive do
   alias TicTacToe.Game
 
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, board: List.duplicate("", 9), turn: "X")}
+    game = TicTacToe.Repo.one(TicTacToe.Game) || %TicTacToe.Game{x_moves: [], o_moves: [], x_wins: 0, o_wins: 0}
+    {:ok, assign(socket, board: List.duplicate("", 9), turn: "X", x_wins: game.x_wins, o_wins: game.o_wins)}
   end
 
   # handle event for moving, passes the index of the tile clicked as params
@@ -49,6 +50,17 @@ defmodule TicTacToeWeb.TicTacToeLive do
       cond do
         Enum.any?(winning_combinations, fn combo -> Enum.all?(combo, &(&1 in game.x_moves)) end) -> "X"
         Enum.any?(winning_combinations, fn combo -> Enum.all?(combo, &(&1 in game.o_moves)) end) -> "O"
+        true -> nil
+      end
+      case winner do
+        "X" ->
+          updated_game = %{x_moves: game.x_moves, o_moves: game.o_moves, x_wins: game.x_wins ++ 1, o_wins: game.o_wins}
+          changeset = TicTacToe.Game.changeset(game, updated_game)
+          TicTacToe.Repo.insert_or_update(changeset)
+        "O" ->
+          updated_game = %{x_moves: game.x_moves, o_moves: game.o_moves, x_wins: game.x_wins, o_wins: game.o_wins ++ 1}
+          changeset = TicTacToe.Game.changeset(game, updated_game)
+          TicTacToe.Repo.insert_or_update(changeset)
       end
   end
 
@@ -73,6 +85,8 @@ defmodule TicTacToeWeb.TicTacToeLive do
           <%= value %>
         </button>
         <% end %>
+        <p> x wins: <%= @x_wins %></p>
+        <p> y wins: <%= @o_wins %></p>
       </div>
     </div>
     """
