@@ -5,8 +5,8 @@ defmodule TicTacToe.Repo.Migrations.CreateGames do
     create table(:games) do
       add :x_moves, {:array, :integer}
       add :o_moves, {:array, :integer}
-      add :turn, :string
-      add :winner, :string
+      add :x_wins, :integer
+      add :o_wins, :integer
 
       timestamps(type: :utc_datetime)
     end

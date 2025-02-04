@@ -1,5 +1,7 @@
 defmodule TicTacToeWeb.TicTacToeLive do
   use TicTacToeWeb, :live_view
+  alias TicTacToe.Repo
+  alias TicTacToe.Game
 
   def mount(_params, _session, socket) do
     {:ok, assign(socket, board: List.duplicate("", 9), turn: "X")}
@@ -20,7 +22,19 @@ defmodule TicTacToeWeb.TicTacToeLive do
       updated_board = List.replace_at(board, index, turn)
       # switch turns
       next_turn = if turn == "X", do: "0", else: "X"
-      # ********* need step to update the player's coordinates in the DB here
+      # fetch the latest game
+      game = TicTacToe.Repo.one(TicTacToe.Game) || %TicTacToe.Game{x_moves: [], o_moves: [], x_wins: 0, o_wins: 0}
+      IO.inspect(game, label: "game object")
+      # updated game, if turn is X, add the index of the move to the x_moves field, if turn is O, add index to o_moves field
+      updated_game =
+        case turn do
+          "X" -> %{game | x_moves: game.x_moves ++ [index]}
+          "O" -> %{game | o_moves: game.o_moves ++ [index]}
+        end
+      # changeset to update the DB with the players move
+      changeset = TicTacToe.Game.changeset(game, updated_game)
+      # push changes to the DB
+      TicTacToe.Repo.insert_or_update(changeset)
       # ********* need to call the check winner function here
       {:noreply, assign(socket, board: updated_board, turn: next_turn)}
     else
@@ -38,11 +52,12 @@ defmodule TicTacToeWeb.TicTacToeLive do
       # (3, 6, 9)
       # (1, 5, 9)
       # (3, 5, 7)
-    # If winner, increment o_wins, or x_wins. Call clear board function
+    # If winner, increment o_wins, or x_wins. Call clear board function. Clear x_moves and o_moves array in DB
     # if no winner, return
 
   # need clear board func, to be called when someone wins
 
+  # need reset score function
 
   def render(assigns) do
     ~H"""
