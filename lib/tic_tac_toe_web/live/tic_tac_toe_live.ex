@@ -42,16 +42,19 @@ defmodule TicTacToeWeb.TicTacToeLive do
     end
   end
 
+  def check_winner() do
+    winning_combinations = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
+    game = TicTacToe.Repo.one(TicTacToe.Game) || %TicTacToe.Game{x_moves: [], o_moves: [], x_wins: 0, o_wins: 0}
+    winner =
+      cond do
+        Enum.any?(winning_combinations, fn combo -> Enum.all?(combo, &(&1 in game.x_moves)) end) -> "X"
+        Enum.any?(winning_combinations, fn combo -> Enum.all?(combo, &(&1 in game.o_moves)) end) -> "O"
+      end
+  end
+
+
+
   # need check winner func, wich will check both players coordinates against the winning combinations. Called in the move handle event
-    # winning combinations:
-      # (1, 2, 3)
-      # (4, 5, 6)
-      # (7, 8, 9)
-      # (1, 4, 7)
-      # (2, 5, 8)
-      # (3, 6, 9)
-      # (1, 5, 9)
-      # (3, 5, 7)
     # If winner, increment o_wins, or x_wins. Call clear board function. Clear x_moves and o_moves array in DB
     # if no winner, return
 
