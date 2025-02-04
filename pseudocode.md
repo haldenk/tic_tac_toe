@@ -17,7 +17,7 @@ diagonal:
 (1, 5, 9)
 (3, 5, 7)
 
-when the user clicks a square, the corresponding index of the tilewill be saved to db
+when the user clicks a square, the corresponding index of the tile will be saved to db
 
 all winning combinations stored, if a user's coordinates have all winning coordinates, they win.
 
