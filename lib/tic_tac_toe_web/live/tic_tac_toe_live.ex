@@ -22,13 +22,30 @@ defmodule TicTacToeWeb.TicTacToeLive do
     else
       {:noreply, socket}
     end
-
   end
+
+  # need check winner func, wich will check both players coordinates against the winning combinations. Called in the move handle event
+
+# winning combinations:
+# horizintal:
+# (1, 2, 3)
+# (4, 5, 6)
+# (7, 8, 9)
+# vertical:
+# (1, 4, 7)
+# (2, 5, 8)
+# (3, 6, 9)
+# diagonal:
+# (1, 5, 9)
+# (3, 5, 7)
+
+  # need clear board func, to be called when someone wins
+
 
   def render(assigns) do
     ~H"""
     <div class="flex flex-col items-center justify-center">
-      <h2 class="text-3xl text-center">Welcome to tic tac toe!</h2>
+      <h2 class="text-3xl text-center mb-3">Welcome to tic tac toe!</h2>
       <h3 class="text-xl">Current turn: <%= @turn %> </h3>
       <div class="grid grid-cols-3 mt-5">
         <%= for {value, index} <- Enum.with_index(@board) do %>
