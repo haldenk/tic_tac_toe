@@ -5,18 +5,36 @@ defmodule TicTacToeWeb.TicTacToeLive do
     {:ok, assign(socket, board: List.duplicate("", 9), turn: "X")}
   end
 
+  # handle event for moving, passes the index of the tile clicked as params
   def handle_event("move", %{"index" => index}, socket) do
     IO.inspect(index, label: "index of button clicked")
-    {:noreply, socket}
+    # converts the index of the tile to an integer
+    index = String.to_integer(index)
+    #the board, from assign
+    board = socket.assigns.board
+    # the turn, from assign
+    turn = socket.assigns.turn
+    # if the selected tile is an empty string
+    if Enum.at(board, index) == "" do
+      updated_board = List.replace_at(board, index, turn)
+      next_turn = if turn == "X", do: "0", else: "X"
+      {:noreply, assign(socket, board: updated_board, turn: next_turn)}
+    else
+      {:noreply, socket}
+    end
+
   end
 
   def render(assigns) do
     ~H"""
     <div class="flex flex-col items-center justify-center">
       <h2 class="text-3xl text-center">Welcome to tic tac toe!</h2>
+      <h3 class="text-xl">Current turn: <%= @turn %> </h3>
       <div class="grid grid-cols-3 mt-5">
-        <%= for index <- 0..8 do %>
-        <button phx-click="move" phx-value-index={index} class="border border-black h-20 w-20"><%=index%></button>
+        <%= for {value, index} <- Enum.with_index(@board) do %>
+        <button phx-click="move" phx-value-index={index} class="border border-black h-20 w-20">
+          <%= value %>
+        </button>
         <% end %>
       </div>
     </div>
