@@ -36,14 +36,20 @@ defmodule TicTacToeWeb.TicTacToeLive do
       changeset = TicTacToe.Game.changeset(game, updated_game)
       # push changes to the DB
       TicTacToe.Repo.insert_or_update(changeset)
-      # ********* need to call the check winner function here
-      {:noreply, assign(socket, board: updated_board, turn: next_turn)}
+
+      case check_winner(updated_game) do
+        {:winner, winner, updated_game} ->
+          {:noreply, assign(socket, board: List.duplicate("", 9), turn: "X", x_wins: updated_game.x_wins, o_wins: updated_game.o_wins)}
+        :no_winner ->
+          {:noreply, assign(socket, board: updated_board, turn: next_turn)}
+      end
+
     else
       {:noreply, socket}
     end
   end
 
-  def check_winner() do
+  def check_winner(updated_game) do
     winning_combinations = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
     game = TicTacToe.Repo.one(TicTacToe.Game) || %TicTacToe.Game{x_moves: [], o_moves: [], x_wins: 0, o_wins: 0}
     winner =
@@ -54,13 +60,17 @@ defmodule TicTacToeWeb.TicTacToeLive do
       end
       case winner do
         "X" ->
-          updated_game = %{x_moves: game.x_moves, o_moves: game.o_moves, x_wins: game.x_wins ++ 1, o_wins: game.o_wins}
+          updated_game = %{x_moves: [], o_moves: [], x_wins: game.x_wins + 1, o_wins: game.o_wins}
           changeset = TicTacToe.Game.changeset(game, updated_game)
           TicTacToe.Repo.insert_or_update(changeset)
+          {:winner, "X", updated_game}
         "O" ->
-          updated_game = %{x_moves: game.x_moves, o_moves: game.o_moves, x_wins: game.x_wins, o_wins: game.o_wins ++ 1}
+          updated_game = %{x_moves: [], o_moves: [], x_wins: game.x_wins, o_wins: game.o_wins + 1}
           changeset = TicTacToe.Game.changeset(game, updated_game)
           TicTacToe.Repo.insert_or_update(changeset)
+          {:winner, "O", updated_game}
+        nil ->
+          :no_winner
       end
   end
 
