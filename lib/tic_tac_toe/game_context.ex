@@ -10,12 +10,12 @@ defmodule TicTacToe.GameContext do
   # record move for X
 
   def record_move(%Game{} = game, index, "X") do
-    update_game(game, %x_moves: game.x_moves ++ [index])
+    update_game(game, %{x_moves: game.x_moves ++ [index]})
   end
 
   # record move for O
-  def record_move(%Game{} = game, index, "X") do
-    update_game(game, %x_moves: game.o_moves ++ [index])
+  def record_move(%Game{} = game, index, "O") do
+    update_game(game, %{o_moves: game.o_moves ++ [index]})
   end
   # check winner
 
