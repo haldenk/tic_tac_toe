@@ -37,6 +37,9 @@ defmodule TicTacToe.GameContext do
     end
   end
 
-
   # reset game
+  def reset_game(game) do
+    update_game(game, %{x_moves: [], o_moves: [], x_wins: 0, o_wins: 0})
+  end
+
 end
